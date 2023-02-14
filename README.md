@@ -1,4 +1,6 @@
 # Education-Horizons-Challenge
+### Name: Samer Adra    
+### Date: February 14, 2023 <br /> <br />
 ## Program Summary
 A React component that generates an array of 32768 unique RGB colours, where each colour occurs exactly once with no repetition and no unused colours. Colours are made up of three components — red,green, and blue, and each colour component is broken into 32 steps — 8,16, 24 .. 255 with the exception of using the value 255 instead of 256 because the coluor component ranges from 0 to 255, and using 256 will be interpreted as 0.
 ## Program Setup
