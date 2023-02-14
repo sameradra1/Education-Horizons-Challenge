@@ -1,0 +1,71 @@
+/*
+Name: Samer Adra      Date: February 14, 2023
+
+Program Description: A React component that generates an array of 32768 unique RGB colors,
+breaks each colour component into 32 steps — 8,16, 24 .. 255 with the exception of using the value 255 instead of 256,
+and displays them as 2px-wide, 24px-tall blocks of color.
+*/
+import React, { useState, useEffect } from "react";
+
+const COLOR_STEP = 8;
+
+const generateColors = () => {
+  const colors = [];
+  for (let red = 8; red <= 256; red += COLOR_STEP) {
+    for (let green = 8; green <= 256; green += COLOR_STEP) {
+      for (let blue = 8; blue <= 256; blue += COLOR_STEP) {
+        // Since the RGB color values range from 0 to 255, then if a color component reaches 256, it will be set to 255
+        // to avoid the 256 being interpreted as a zero
+        red = red === 256 ? 255 : red;
+        green = green === 256 ? 255 : green;
+        blue = blue === 256 ? 255 : blue;
+        colors.push(`rgb(${red}, ${green}, ${blue})`);
+      }
+    }
+  }
+  // console.log(`Total number of colors: ${colors.length}`); -- Used to verify the total number of colors which was 32768 unique colors
+  return colors;
+};
+
+const ImageWithUniqueColors = () => {
+  const [colors, setColors] = useState([]);
+
+  useEffect(() => {
+    setColors(generateColors());
+  }, []); // Empty array to run 'generateColors' once, when the component is first rendered
+
+  /*
+  The following code was used to check and verify the components of the colors array.
+  Note that you need to comment out lines 33 to 35 before using the code below.
+  useEffect(() => {
+    setColors(generateColors());
+  }, [colors]);
+
+  useEffect(() => {
+    console.log("colors:", colors);
+  }, [colors]);
+  */
+
+  /*
+  Create a div for each color, with the div's background color set to the corresponding RGB value. 
+  The divs are displayed in a single line, with no line breaks, so that the generated color blocks appear as a single horizontal strip.
+  Note that lineHeight was set to 0 to remove white spacing between different lines of color.
+  */
+  return (
+    <div style={{ lineHeight: 0 }}>
+      {colors.map((color, index) => (
+        <div
+          key={index}
+          style={{
+            backgroundColor: color,
+            width: "2px",
+            height: "24px",
+            display: "inline-block",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default ImageWithUniqueColors;

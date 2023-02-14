@@ -1,0 +1,94 @@
+/*
+Name: Samer Adra      Date: February 14, 2023
+
+Program Description: A React component that generates an array of 32768 unique RGB colors,
+breaks each colour component into 32 steps — 8,16, 24 .. 255 with the exception of using the value 255 instead of 256,
+sorts the colors using a custom sorting function that converts each RGB color to its corresponding HSV (Hue, Saturation, Value) representation
+and sorts the array based on the hue, saturation, and value values.
+and then displays them as 5px-wide, 10px-tall blocks of color.
+*/
+import React, { useState, useEffect } from "react";
+import colorConvert from "color-convert";
+
+const COLOR_STEP = 8;
+
+const generateColors = () => {
+  const colors = [];
+  for (let red = 8; red <= 256; red += COLOR_STEP) {
+    for (let green = 8; green <= 256; green += COLOR_STEP) {
+      for (let blue = 8; blue <= 256; blue += COLOR_STEP) {
+        // Since the RGB color values range from 0 to 255, then if a color component reaches 256, it will be set to 255
+        // to avoid the 256 being interpreted as a zero
+        red = red === 256 ? 255 : red;
+        green = green === 256 ? 255 : green;
+        blue = blue === 256 ? 255 : blue;
+        colors.push(`rgb(${red}, ${green}, ${blue})`);
+      }
+    }
+  }
+
+  /*
+  This sorts the colors in ascending HSV order using the following steps:
+  1. Removes the "rgb(" prefix from the string, so that only the RGB values remain.
+  2. Generate an array strings representing the RGB values
+  3. Map each string in the array to its integer representation
+  4. Convert each RGB color to its corresponding HSV (Hue, Saturation, Value)
+
+  If the hue values of a and b are not equal, return the difference between their hue values.
+  If the saturation values of a and b are not equal, return the difference between their saturation values.
+  If the value values of a and b are not equal, return the difference between their value values.
+  */
+  colors.sort((a, b) => {
+    const hsvA = colorConvert.rgb.hsv(
+      ...a
+        .substring(4, a.length - 1)
+        .split(", ")
+        .map((c) => parseInt(c))
+    );
+    const hsvB = colorConvert.rgb.hsv(
+      ...b
+        .substring(4, b.length - 1)
+        .split(", ")
+        .map((c) => parseInt(c))
+    );
+    if (hsvA[0] !== hsvB[0]) {
+      return hsvA[0] - hsvB[0];
+    } else if (hsvA[1] !== hsvB[1]) {
+      return hsvA[1] - hsvB[1];
+    } else {
+      return hsvA[2] - hsvB[2];
+    }
+  });
+  return colors;
+};
+
+const ImageWithUniqueColors = () => {
+  const [colors, setColors] = useState([]);
+
+  useEffect(() => {
+    setColors(generateColors());
+  }, []); // Empty array to run 'generateColors' once, when the component is first rendered
+
+  /*
+  Create a div for each color, with the div's background color set to the corresponding RGB value. 
+  The divs are displayed in a single line, with no line breaks, so that the generated color blocks appear as a single horizontal strip.
+  Note that lineHeight was set to 0 to remove white spacing between different lines of color.
+  */
+  return (
+    <div style={{ lineHeight: 0 }}>
+      {colors.map((color, index) => (
+        <div
+          key={index}
+          style={{
+            backgroundColor: color,
+            width: "5px",
+            height: "10px",
+            display: "inline-block",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default ImageWithUniqueColors;
